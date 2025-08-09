@@ -1,0 +1,37 @@
+<% content_for :title, "Bulk Upload Transactions" %>
+
+<div class="mx-auto max-w-xl p-6">
+  <div class="rounded-2xl bg-white shadow p-6">
+    <h1 class="text-2xl font-semibold tracking-tight mb-6">Bulk Upload Transactions</h1>
+
+    <% if flash[:alert] %>
+      <div class="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-red-700">
+        <%= flash[:alert] %>
+      </div>
+    <% end %>
+    <% if flash[:notice] %>
+      <div class="mb-4 rounded-lg border border-green-200 bg-green-50 p-3 text-green-700">
+        <%= flash[:notice] %>
+      </div>
+    <% end %>
+
+    <%= form_with url: bulk_upload_transactions_path, local: true, multipart: true, class: "space-y-6" do |f| %>
+      <div class="grid gap-2">
+        <%= f.label :file, "Select CSV file", class: "text-sm font-medium text-gray-700" %>
+        <%= f.file_field :file,
+              accept: ".csv",
+              required: true,
+              class: "w-full rounded-lg border border-gray-300 bg-white px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" %>
+        <p class="text-xs text-gray-500">
+          Expected columns: <code>Date</code>, <code>Transaction</code>, <code>Amount</code>, <code>Balance</code>.
+          Example: <em>12/13/2024,VISA PURCHASE ..., -$250.00, $66,434.47</em>
+        </p>
+      </div>
+
+      <div>
+        <%= f.submit "Upload CSV",
+              class: "inline-flex items-center rounded-lg bg-indigo-600 px-4 py-2 text-white font-medium shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
+      </div>
+    <% end %>
+  </div>
+</div>

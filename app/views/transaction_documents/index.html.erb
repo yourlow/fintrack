@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Transaction documents" %>
+
+<h1>Transaction documents</h1>
+
+<div id="transaction_documents">
+  <% @transaction_documents.each do |transaction_document| %>
+    <%= render transaction_document %>
+    <p>
+      <%= link_to "Show this transaction document", transaction_document %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New transaction document", new_transaction_document_path %>

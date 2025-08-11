@@ -5,17 +5,30 @@ class TransactionsController < ApplicationController
 
   # GET /transactions or /transactions.json
   def index
-    minimum = params["min"]
+    curr = params["curr"]
 
+    if curr.blank?
+      @current = OrderedTransaction.first
 
-    if minimum.nil?
-
-      minimum = Transaction.pending
-      .order(:transaction_date)
-      .first
-
+    else
+      @current = OrderedTransaction.find_by(computed_index: curr.to_i)
     end
-    @transactions = Transaction.next_from(minimum)
+    @transactions = OrderedTransaction.window(@current.computed_index.to_i)
+  end
+
+  def frame
+    curr = params["curr"]
+
+    if curr.blank?
+      @current = OrderedTransaction.first
+
+    else
+      @current = OrderedTransaction.find_by(computed_index: curr.to_i)
+    end
+
+    @transactions = OrderedTransaction.window(@current.computed_index.to_i)
+
+    render partial: "transactions/transaction_table", locals: { transactions: @transactions, current: @current }
   end
 
   # GET /transactions/1 or /transactions/1.json

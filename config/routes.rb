@@ -6,6 +6,7 @@ Rails.application.routes.draw do
     collection do
       get :bulk_upload
       post :bulk_upload
+      get :frame
     end
   end
 

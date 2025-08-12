@@ -5,18 +5,31 @@ class Transaction < ApplicationRecord
 
   scope :pending, -> { where(balanced: false) }
 
+  ORDER_COL = "transaction_date" # or "view_date"
 
-  def self.next_from(id, count = 20)
-    start = find_by(id: id)
-    return none unless start
+  scope :ordered_for_index, -> {
+    reorder(Arel.sql("#{ORDER_COL} ASC, id ASC"))
+  }
 
-    return order(:transaction_date, :created_at, :id).where(
-      "transaction_date > :d
-       OR (transaction_date = :d AND (created_at > :c
-           OR (created_at = :c AND id > :id)))",
-      d: start.transaction_date,
-      c: start.created_at,
-      id: start.id
-    ).limit(count), start
+  scope :with_computed_index, -> {
+    select(
+      Arel.sql(%(transactions.*, ROW_NUMBER() OVER (ORDER BY #{ORDER_COL}, id) AS computed_index))
+    ).ordered_for_index
+  }
+
+  scope :window_by_index, ->(start_index, length: 20) {
+    inner = with_computed_index
+
+    from(inner, :ordered)
+      .select(Arel.sql("ordered.*")) # <-- critical: stop selecting "transactions".*
+      .where("computed_index BETWEEN ? AND ?", start_index, start_index + length - 1)
+      .order(Arel.sql("computed_index ASC"))
+  }
+
+  def self.find_by_computed_index(idx)
+    from(with_computed_index, :ordered)
+      .select(Arel.sql("ordered.*"))
+      .where("computed_index = ?", idx)
+      .take
   end
 end

@@ -8,25 +8,24 @@ class TransactionsController < ApplicationController
     curr = params["curr"]
 
     if curr.blank?
-      @current = OrderedTransaction.first
+      @current = Transaction.with_computed_index.pending.first
 
     else
-      @current = OrderedTransaction.find_by(computed_index: curr.to_i)
+      @current = Transaction.find_by_computed_index(curr.to_i)
     end
-    @transactions = OrderedTransaction.window(@current.computed_index.to_i)
+    @transactions = Transaction.window_by_index(@current.computed_index.to_i)
   end
 
   def frame
     curr = params["curr"]
 
     if curr.blank?
-      @current = OrderedTransaction.first
+      @current = Transaction.with_computed_index.pending.first
 
     else
-      @current = OrderedTransaction.find_by(computed_index: curr.to_i)
+      @current = Transaction.find_by_computed_index(curr.to_i)
     end
-
-    @transactions = OrderedTransaction.window(@current.computed_index.to_i)
+    @transactions = Transaction.window_by_index(@current.computed_index.to_i)
 
     render partial: "transactions/transaction_table", locals: { transactions: @transactions, current: @current }
   end

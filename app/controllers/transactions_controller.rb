@@ -8,26 +8,41 @@ class TransactionsController < ApplicationController
     curr = params["curr"]
 
     if curr.blank?
-      @current = Transaction.with_computed_index.pending.first
+      @current = Transaction.pending.ordered.first
 
     else
-      @current = Transaction.find_by_computed_index(curr.to_i)
+      @current = Transaction.find(curr)
     end
-    @transactions = Transaction.window_by_index(@current.computed_index.to_i)
+
+
+    @prev = @current.prev
+    @next = @current.next
+
+    @transactions = Transaction.ordered
+    .where("transaction_date > :d OR (transaction_date = :d AND id >= :i)",
+           d: @current.transaction_date, i: @current.id)
+    .limit(20)
+
   end
 
   def frame
     curr = params["curr"]
 
     if curr.blank?
-      @current = Transaction.with_computed_index.pending.first
+      @current = Transaction.pending.ordered.first
 
     else
-      @current = Transaction.find_by_computed_index(curr.to_i)
+      @current = Transaction.find(curr)
     end
-    @transactions = Transaction.window_by_index(@current.computed_index.to_i)
 
-    render partial: "transactions/transaction_table", locals: { transactions: @transactions, current: @current }
+
+    @prev = @current.prev
+    @next = @current.next
+    @transactions = Transaction.ordered
+    .where("transaction_date > :d OR (transaction_date = :d AND id >= :i)",
+           d: @current.transaction_date, i: @current.id)
+    .limit(20)
+    render partial: "transactions/transaction_table", locals: { transactions: @transactions, current: @current, prev: @prev, next: @next }
   end
 
   # GET /transactions/1 or /transactions/1.json

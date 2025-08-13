@@ -1,56 +1,60 @@
 <%# Expected locals: transactions, current %>
-
-
-
-
-<%= turbo_frame_tag "transaction_table",
-      data: {
-        controller: "txn-nav",
-        "txn-nav-index-value": current.computed_index,
-        "txn-nav-frame-url-value": frame_transactions_path,
-        "txn-nav-frame-id-value": "transaction_table"
-      } do %>
-
-
-
-    <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+<%= turbo_frame_tag "transaction_table" do %>
+  <script type="module">
+    const prev = document.getElementById("prev-link");
+    const next = document.getElementById("next-link");
+    document.addEventListener("keydown", (e) => {
+      const t = e.target;
+      if (t && t.closest("input, textarea, [contenteditable]")) return;
+      if (e.key === "ArrowLeft" && prev && prev.href) {
+        e.preventDefault();
+        Turbo.visit(prev.href, { frame: "transaction_table" });
+      } else if (e.key === "ArrowRight" && next && next.href) {
+        e.preventDefault();
+        Turbo.visit(next.href, { frame: "transaction_table" });
+      }
+    }, { once: true });
+  </script>
+  <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
     <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
+      <thead class="bg-gray-50">
         <tr>
-                    <th scope="col" class="px-4 py-3 text-left text-sm font-semibold text-gray-600">ID</th>
-
-            <th scope="col" class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Date</th>
-            <th scope="col" class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Raw Description</th>
-            <th scope="col" class="px-4 py-3 text-left text-sm font-semibold text-gray-600">User Description</th>
-            <th scope="col" class="px-4 py-3 text-right text-sm font-semibold text-gray-600">Amount</th>
-            <th scope="col" class="px-4 py-3 text-right text-sm font-semibold text-gray-600">Actions</th>
+          <th scope="col" class="px-4 py-3 text-left text-sm font-semibold text-gray-600">ID</th>
+          <th scope="col" class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Date</th>
+          <th scope="col" class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Raw Description</th>
+          <th scope="col" class="px-4 py-3 text-left text-sm font-semibold text-gray-600">User Description</th>
+          <th scope="col" class="px-4 py-3 text-right text-sm font-semibold text-gray-600">Amount</th>
+          <th scope="col" class="px-4 py-3 text-right text-sm font-semibold text-gray-600">Actions</th>
         </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-200 bg-white">
+      </thead>
+      <tbody class="divide-y divide-gray-200 bg-white">
         <% transactions.each do |transaction| %>
-            <tr>
-                <td class="px-4 py-3 text-sm text-gray-900">
-                <%= transaction.computed_index%>
-            </td>
-            <td class="px-4 py-3 text-sm text-gray-900">
-                <%= transaction.transaction_date&.strftime("%Y-%m-%d") %>
-            </td>
-            <td class="px-4 py-3 text-sm text-gray-900"><%= transaction.raw_description %></td>
-            <td class="px-4 py-3 text-sm text-gray-900"><%= transaction.user_description %></td>
-            <td class="px-4 py-3 text-sm text-right text-gray-900">
-                <%= number_to_currency(transaction.amount.to_f / 100) %>
-            </td>
-            <td class="px-4 py-3 text-sm text-right space-x-2">
-                <%= link_to "Show", transaction_path(transaction.id), class: "text-indigo-600 hover:text-indigo-900 font-medium" %>
-                <%= link_to "Edit", edit_transaction_path(transaction), class: "text-blue-600 hover:text-blue-900 font-medium" %>
-                <%= link_to "Delete", transaction_path(transaction.id), method: :delete, data: { confirm: "Are you sure?" }, class: "text-red-600 hover:text-red-900 font-medium" %>
-            </td>
-            </tr>
-        <% end %>
-        </tbody>
-    </table>
-    </div>
+          <td class="px-4 py-3 text-sm text-gray-900">
+            <%= transaction.transaction_date&.strftime("%Y-%m-%d") %>
+          </td>
+          <td class="px-4 py-3 text-sm text-gray-900"><%= transaction.raw_description %></td>
+          <td class="px-4 py-3 text-sm text-gray-900"><%= transaction.user_description %></td>
+          <td class="px-4 py-3 text-sm text-right text-gray-900">
+            <%= number_to_currency(transaction.amount.to_f / 100) %>
+          </td>
+          <td class="px-4 py-3 text-sm text-right space-x-2">
+            <%= link_to "Show", transaction_path(transaction.id), class: "text-indigo-600 hover:text-indigo-900 font-medium" %>
+            <%= link_to "Edit", edit_transaction_path(transaction), class: "text-blue-600 hover:text-blue-900 font-medium" %>
+            <%= link_to "Delete", transaction_path(transaction.id), method: :delete, data: { confirm: "Are you sure?" }, class: "text-red-600 hover:text-red-900 font-medium" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <%= link_to "Prev",
+          frame_transactions_path(curr: @prev&.id),
+          id: "prev-link",
+          class: "btn" %>
+  <%= link_to "Next",
+          frame_transactions_path(curr: @next&.id),
+          id: "next-link",
+          class: "btn" %>
+</div>
 
-    <%# <%= render partial: "form", locals: { transaction: @current } %> %>
-
+<%= render partial: "transactions/form", locals: { transaction: current } %>
 <% end %>

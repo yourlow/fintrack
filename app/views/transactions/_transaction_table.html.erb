@@ -1,4 +1,5 @@
 <%# Expected locals: transactions, current %>
+<% @entries ||= []%>
 <%= turbo_frame_tag "transaction_table" do %>
   <script type="module">
     const prev = document.getElementById("prev-link");
@@ -55,6 +56,14 @@
           id: "next-link",
           class: "btn" %>
 </div>
+<%= render "transactions/form", transaction: current %>  <!-- form ends here -->
+<div id="transaction_entries">
+  <% @entries.each do |entry| %>
+    <%= render "entries/form", entry: entry %>
+  <% end %>
+</div>
+<%= link_to "New Entry", new_entry_path, class: "btn" %>
 
-<%= render partial: "transactions/form", locals: { transaction: current } %>
+
+
 <% end %>

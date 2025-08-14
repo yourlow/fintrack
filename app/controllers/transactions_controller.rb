@@ -21,7 +21,7 @@ class TransactionsController < ApplicationController
     @transactions = Transaction.ordered
     .where("transaction_date > :d OR (transaction_date = :d AND id >= :i)",
            d: @current.transaction_date, i: @current.id)
-    .limit(20)
+    .limit(5)
 
   end
 
@@ -41,7 +41,7 @@ class TransactionsController < ApplicationController
     @transactions = Transaction.ordered
     .where("transaction_date > :d OR (transaction_date = :d AND id >= :i)",
            d: @current.transaction_date, i: @current.id)
-    .limit(20)
+    .limit(5)
     render partial: "transactions/transaction_table", locals: { transactions: @transactions, current: @current, prev: @prev, next: @next }
   end
 

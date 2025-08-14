@@ -12,18 +12,17 @@ class EntriesController < ApplicationController
 
   # GET /entries/new
   def new
-    @entry = Entry.new
+    transaction = Transaction.find(params[:transaction_id])
 
-    respond_to do |format|
-      format.html
-      format.turbo_stream do
-        render turbo_stream: turbo_stream.append(
-          "transaction_entries",
-          partial: "entries/form",
-          locals: { entry: @entry }
-        )
-      end
-    end
+    @entry = Entry.new(txn: transaction)
+
+
+
+    render turbo_stream: turbo_stream.append(
+      "transaction_entries",
+      partial: "entries/form",
+      locals: { entry: @entry }
+    )
   end
 
   # GET /entries/1/edit

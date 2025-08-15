@@ -16,44 +16,44 @@
       }
     }, { once: true });
   </script>
-  <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
-    <table class="divide-y divide-gray-200">
-      <thead class="bg-gray-50">
-        <tr>
-          <th scope="col" class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Date</th>
-          <th scope="col" class="px-4 py-3 text-left text-sm font-semibold text-gray-600">Raw Description</th>
-          <th scope="col" class="px-4 py-3 text-left text-sm font-semibold text-gray-600">User Description</th>
-          <th scope="col" class="px-4 py-3 text-right text-sm font-semibold text-gray-600">Amount</th>
-          <th scope="col" class="px-4 py-3 text-right text-sm font-semibold text-gray-600">Actions</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gray-200 bg-white">
-        <% transactions.each do |transaction| %>
-          <td class="px-4 py-3 text-sm text-gray-900">
-            <%= transaction.transaction_date&.strftime("%Y-%m-%d") %>
-          </td>
-          <td class="px-4 py-3 text-sm text-gray-900"><%= transaction.raw_description %></td>
-          <td class="px-4 py-3 text-sm text-gray-900"><%= transaction.user_description %></td>
-          <td class="px-4 py-3 text-sm text-right text-gray-900">
-            <%= number_to_currency(transaction.amount.to_f / 100) %>
-          </td>
-          <td class="px-4 py-3 text-sm text-right space-x-2">
-            <%= link_to "Delete", transaction_path(transaction.id), method: :delete, data: { confirm: "Are you sure?" }, class: "text-red-600 hover:text-red-900 font-medium" %>
-          </td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-  <%= link_to "Prev",
+  <div>
+    <table class="table table-zebra table-sm w-5/6">
+      <thead></thead>
+      <tr>
+        <th scope="col">Date</th>
+        <th scope="col">Raw Description</th>
+        <th scope="col">User Description</th>
+        <th scope="col">Amount</th>
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% transactions.each do |transaction| %>
+        <td>
+          <%= transaction.transaction_date&.strftime("%Y-%m-%d") %>
+        </td>
+        <td><%= transaction.raw_description %></td>
+        <td><%= transaction.user_description %></td>
+        <td>
+          <%= number_to_currency(transaction.amount.to_f / 100) %>
+        </td>
+        <td>
+            <%= button_to "Delete", transaction_path(transaction.id), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-error" %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<%= link_to "Prev",
           frame_transactions_path(curr: @prev&.id),
           id: "prev-link",
           class: "btn" %>
-  <%= link_to "Next",
+<%= link_to "Next",
           frame_transactions_path(curr: @next&.id),
           id: "next-link",
           class: "btn" %>
 </div>
-<div class="flex">
+<div class="flex w-1/2">
   <%= render "transactions/form", transaction: current %>  <!-- form ends here -->
   <div id="transaction_entries">
     <% @entries.each do |entry| %>

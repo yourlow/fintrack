@@ -9,43 +9,52 @@
       </ul>
     </div>
   <% end %>
-  <div>
-    <%= form.label :raw_description, style: "display: block" %>
-    <%= form.text_field :raw_description, class: "input", style: "width: 100%;" %>
-  </div>
-  <div>
-    <%= form.label :user_description, style: "display: block" %>
-    <%= form.text_field :user_description, class: "input", style: "width: 100%;" %>
-  </div>
-  <div>
-    <%= form.label :amount, style: "display: block" %>
-    <%= form.number_field :amount, class: "input", style: "width: 100%;" %>
-  </div>
-  <div>
-    <%= form.submit class: "btn btn-primary" %>
-  </div>
-  <table class="table table-sm w-full" id="entries">
-    <thead>
-      <tr>
+  <div class="flex">
+    <div class="w-1/2 px-2">
+      <div>
+        <%= form.label :raw_description, class: "block mb-1" %>
+        <%= form.text_field :raw_description, class: "input w-full mb-4" %>
+      </div>
+      <div>
+        <%= form.label :user_description, class: "block mb-1" %>
+        <%= form.text_field :user_description, class: "input w-full mb-4" %>
+      </div>
+      <div>
+        <%= form.label :amount, class: "block mb-1" %>
+        <%= form.number_field :amount, class: "input w-full mb-4" %>
+      </div>
+      <div>
+        <%= form.submit class: "btn btn-primary" %>
+      </div>
+    </div>
+    <div class="w-1/2 px-2">
+      <table class="table table-zebra w-full" id="entries">
+        <thead>
+          <tr>
         <th>Account</th>
         <th>Type (Credit/Debit)</th>
         <th>Amount</th>
-      </tr>
-    </thead>
-    <tbody>
-      <%= form.fields_for :entries do |entires_form| %>
+          </tr>
+        </thead>
+        <tbody>
+          <%= form.fields_for :entries do |entries_form| %>
         <tr>
-          <th><%= form.label :account_id %></th>
-          <th><%= form.label :amount %></th>
-          <th><%= form.label :entry_type %></th>
+          <td>
+        <%= entries_form.select :account_id, @accounts.collect { |a| [a.name, a.id] }, { include_blank: true }, class: "select select-bordered w-full" %>
+          </td>
+          <td>
+        <%= entries_form.text_field :entry_type, class: "input input-bordered w-full" %>
+          </td>
+          <td>
+        <%= entries_form.number_field :amount, class: "input input-bordered w-full" %>
+          </td>
         </tr>
-        <tr>
-          <td><%= form.select :account_id, @accounts.collect { |a| [a.name, a.id] }, include_blank: true %></td>
-          <td><%= form.number_field :amount %></td>
-          <td><%= form.text_field :entry_type %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-  <%= button_tag "Add Entry", formaction: new_entry_path(transaction_id: transaction.id), formmethod: :get, data: {turbo_stream: true} %>
+          <% end %>
+        </tbody>
+      </table>
+      <div class="flex justify-center mt-4">
+      <%= button_tag "Add Entry", formaction: new_entry_path(transaction_id: transaction.id), formmethod: :get, data: {turbo_stream: true}, class: "btn btn-secondary" %>
+      </div>
+    </div>
+  </div>
 <% end %>

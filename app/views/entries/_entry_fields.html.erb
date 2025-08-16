@@ -1,4 +1,4 @@
-<tr>
+<tr id="entry_fields_<%= form.object.id || form.index %>">
   <td>
     <%= form.select :account_id, @accounts.collect { |a| [a.name, a.id] }, include_blank: true, class: "select" %>
   </td>
@@ -7,5 +7,8 @@
   </td>
   <td>
     <%= form.number_field :amount, step: "0.01", class: "input input-bordered w-full" %>
+  </td>
+  <td>
+    <%= button_tag "Remove Entry", formaction: entry_path(form&.object.id || form.index), formmethod: :delete, data: {turbo_stream: true}, class: "btn btn-error" %>
   </td>
 </tr>

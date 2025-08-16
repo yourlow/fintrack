@@ -1,5 +1,5 @@
 class EntriesController < ApplicationController
-  before_action :set_entry, only: %i[ show edit update destroy ]
+  before_action :set_entry, only: %i[ show edit update ]
 
   # GET /entries or /entries.json
   def index
@@ -17,7 +17,6 @@ class EntriesController < ApplicationController
     # transaction = Transactsion.find(params[:transaction_id])
 
     @entry = Entry.new
-
   end
 
   # GET /entries/1/edit
@@ -54,10 +53,13 @@ class EntriesController < ApplicationController
 
   # DELETE /entries/1 or /entries/1.json
   def destroy
-    @entry.destroy!
+    @entry = Entry.find_by(id: params[:id])
 
+
+    @entry && @entry.destroy!
     respond_to do |format|
-      format.html { redirect_to entries_path, status: :see_other, notice: "Entry was successfully destroyed." }
+      format.turbo_stream { render turbo_stream: turbo_stream.remove("entry_fields_#{params[:id]}") }
+      format.html { redirect_to entries_url, notice: "Entry was successfully destroyed." }
       format.json { head :no_content }
     end
   end

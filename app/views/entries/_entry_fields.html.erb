@@ -6,6 +6,6 @@
     <%= form.select :entry_type, [['Credit', 'credit'], ['Debit', 'debit']], include_blank: true, class: "select" %>
   </td>
   <td>
-    <%= form.number_field :amount, class: "input input-bordered w-full" %>
+    <%= form.number_field :amount, step: "0.01", class: "input input-bordered w-full" %>
   </td>
 </tr>

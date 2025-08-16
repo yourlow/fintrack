@@ -5,6 +5,8 @@ class TransactionsController < ApplicationController
 
   # GET /transactions or /transactions.json
   def index
+      @accounts = Account.all
+
     curr = params["curr"]
 
     if curr.blank?
@@ -22,10 +24,10 @@ class TransactionsController < ApplicationController
     .where("transaction_date > :d OR (transaction_date = :d AND id >= :i)",
            d: @current.transaction_date, i: @current.id)
     .limit(5)
-
   end
 
   def frame
+    @accounts = Account.all
     curr = params["curr"]
 
     if curr.blank?
@@ -75,15 +77,28 @@ class TransactionsController < ApplicationController
 
   # PATCH/PUT /transactions/1 or /transactions/1.json
   def update
-    respond_to do |format|
-      if @transaction.update(transaction_params)
-        format.html { redirect_to @transaction, notice: "Transaction was successfully updated." }
-        format.json { render :show, status: :ok, location: @transaction }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @transaction.errors, status: :unprocessable_entity }
-      end
-    end
+    @transaction.update(params.require(:transaction).permit(
+      :transaction_date,
+      :raw_description,
+      :user_description,
+      :amount_dollars,  # virtual attribute on Transaction
+      entries_attributes: [
+        :id,
+        :account_id,
+        :entry_type,
+        :amount, # virtual attribute on
+        :_destroy
+      ]
+    ))
+
+    @current = @transaction.next
+    @prev = @current.prev
+    @next = @current.next
+    @transactions = Transaction.ordered
+    .where("transaction_date > :d OR (transaction_date = :d AND id >= :i)",
+           d: @current.transaction_date, i: @current.id)
+    .limit(5)
+    render partial: "transactions/transaction_table", locals: { transactions: @transactions, current: @current, prev: @prev, next: @next }
   end
 
   # DELETE /transactions/1 or /transactions/1.json
@@ -188,6 +203,8 @@ class TransactionsController < ApplicationController
   rescue ArgumentError
     nil
   end
+
+
 
 
   # Use callbacks to share common setup or constraints between actions.

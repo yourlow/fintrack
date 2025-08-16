@@ -21,7 +21,7 @@
       </div>
       <div>
         <%= form.label :amount, class: "block mb-1" %>
-        <%= form.number_field :amount, class: "input w-full mb-4" %>
+        <%= form.number_field :amount_dollars, class: "input w-full mb-4" %>
       </div>
       <div>
         <%= form.submit class: "btn btn-primary" %>
@@ -31,29 +31,19 @@
       <table class="table table-zebra w-full" id="entries">
         <thead>
           <tr>
-        <th>Account</th>
-        <th>Type (Credit/Debit)</th>
-        <th>Amount</th>
+            <th>Account</th>
+            <th>Type (Credit/Debit)</th>
+            <th>Amount</th>
           </tr>
         </thead>
         <tbody>
           <%= form.fields_for :entries do |entries_form| %>
-        <tr>
-          <td>
-        <%= entries_form.select :account_id, @accounts.collect { |a| [a.name, a.id] }, { include_blank: true }, class: "select select-bordered w-full" %>
-          </td>
-          <td>
-        <%= entries_form.text_field :entry_type, class: "input input-bordered w-full" %>
-          </td>
-          <td>
-        <%= entries_form.number_field :amount, class: "input input-bordered w-full" %>
-          </td>
-        </tr>
+            <%= render partial: "entries/entry_fields", locals: { form: entries_form, accounts: @accounts } %>
           <% end %>
         </tbody>
       </table>
       <div class="flex justify-center mt-4">
-      <%= button_tag "Add Entry", formaction: new_entry_path(transaction_id: transaction.id), formmethod: :get, data: {turbo_stream: true}, class: "btn btn-secondary" %>
+        <%= button_tag "Add Entry", formaction: new_entry_path(transaction_id: transaction.id), formmethod: :get, data: {turbo_stream: true}, class: "btn btn-secondary" %>
       </div>
     </div>
   </div>

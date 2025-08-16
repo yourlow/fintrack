@@ -1,0 +1,11 @@
+<tr>
+  <td>
+    <%= form.select :account_id, @accounts.collect { |a| [a.name, a.id] }, include_blank: true, class: "select" %>
+  </td>
+  <td>
+    <%= form.select :entry_type, [['Credit', 'credit'], ['Debit', 'debit']], include_blank: true, class: "select" %>
+  </td>
+  <td>
+    <%= form.number_field :amount, class: "input input-bordered w-full" %>
+  </td>
+</tr>

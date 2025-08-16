@@ -3,6 +3,8 @@ class Transaction < ApplicationRecord
   has_many :transaction_documents
 
 
+  accepts_nested_attributes_for :entries
+
   scope :pending, -> { where(balanced: false) }
 
   scope :ordered, -> { order(transaction_date: :asc, id: :asc) }

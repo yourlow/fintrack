@@ -1,0 +1,5 @@
+<%= turbo_stream.append "entries" do %>
+  <%= fields_for 'transaction[entries_attributes][]', Entry.new, index: Time.current.to_i do |form| %>
+    <%= render "entry_fields", form: form %>
+  <% end %>
+<% end %>

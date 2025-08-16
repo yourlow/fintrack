@@ -38,7 +38,7 @@
           <%= number_to_currency(transaction.amount.to_f / 100) %>
         </td>
         <td>
-            <%= button_to "Delete", transaction_path(transaction.id), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-error" %>
+          <%= button_to "Delete", transaction_path(transaction.id), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-error" %>
         </td>
       </tr>
     <% end %>
@@ -55,11 +55,5 @@
 </div>
 <div class="flex w-1/2">
   <%= render "transactions/form", transaction: current %>  <!-- form ends here -->
-  <div id="transaction_entries">
-    <% @entries.each do |entry| %>
-      <%= render "entries/form", entry: entry %>
-    <% end %>
-  </div>
-  <%= button_to "New Entry", new_entry_path, params: { transaction_id: @current.id }, class: "btn", method: :get, data: {turbo_frame: "_top"} %>
 </div>
 <% end %>

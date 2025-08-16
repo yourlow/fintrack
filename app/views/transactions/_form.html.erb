@@ -24,4 +24,28 @@
   <div>
     <%= form.submit class: "btn btn-primary" %>
   </div>
+  <table class="table table-sm w-full" id="entries">
+    <thead>
+      <tr>
+        <th>Account</th>
+        <th>Type (Credit/Debit)</th>
+        <th>Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= form.fields_for :entries do |entires_form| %>
+        <tr>
+          <th><%= form.label :account_id %></th>
+          <th><%= form.label :amount %></th>
+          <th><%= form.label :entry_type %></th>
+        </tr>
+        <tr>
+          <td><%= form.select :account_id, @accounts.collect { |a| [a.name, a.id] }, include_blank: true %></td>
+          <td><%= form.number_field :amount %></td>
+          <td><%= form.text_field :entry_type %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <%= button_tag "Add Entry", formaction: new_entry_path(transaction_id: transaction.id), formmethod: :get, data: {turbo_stream: true} %>
 <% end %>

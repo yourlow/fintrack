@@ -4,17 +4,22 @@
   <script type="module">
     const prev = document.getElementById("prev-link");
     const next = document.getElementById("next-link");
+
     document.addEventListener("keydown", (e) => {
       const t = e.target;
-      if (t && t.closest("input, textarea, [contenteditable]")) return;
-      if (e.key === "ArrowLeft" && prev && prev.href) {
-        e.preventDefault();
-        Turbo.visit(prev.href, { frame: "transaction_table" });
-      } else if (e.key === "ArrowRight" && next && next.href) {
-        e.preventDefault();
-        Turbo.visit(next.href, { frame: "transaction_table" });
+
+      if (e.ctrlKey && e.key === ",") {
+        if (prev && prev.href) {
+          e.preventDefault();
+          Turbo.visit(prev.href, { frame: "transaction_table" });
+        }
+      } else if (e.ctrlKey && e.key === ".") {
+        if (next && next.href) {
+          e.preventDefault();
+          Turbo.visit(next.href, { frame: "transaction_table" });
+        }
       }
-    }, { once: true });
+    });
   </script>
   <div>
     <table class="table table-zebra table-sm w-5/6">
@@ -54,6 +59,6 @@
           class: "btn" %>
 </div>
 <div class="w-full">
-  <%= render "transactions/form", transaction: current %> 
+  <%= render "transactions/form", transaction: current %>
 </div>
 <% end %>

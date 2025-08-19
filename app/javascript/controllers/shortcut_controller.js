@@ -15,6 +15,13 @@ export default class extends Controller {
 
   handleShortcut = (event) => {
     // Ctrl+1
+
+    if (event.ctrlKey && event.key === "Enter") {
+      event.preventDefault();
+      this.element.requestSubmit(); // submits the form
+      return;
+    }
+
     if (event.ctrlKey && event.key === "1") {
       event.preventDefault();
 
@@ -30,10 +37,15 @@ export default class extends Controller {
         }
       });
 
-      // Add shortcut-generated entries here:
+      let amount = parseFloat(transaction.amount_dollars);
+      if (isNaN(amount)) amount = 0;
+
+      const half = Math.abs(amount) / 2;
+
+      // Add shortcut-generated entries
       transaction.entries_attributes = {
-        0: { account_id: 1, entry_type: "debit", amount: 100 },
-        1: { account_id: 2, entry_type: "credit", amount: 100 },
+        0: { account_id: 4, entry_type: "debit", amount: half },
+        1: { account_id: 5, entry_type: "credit", amount: half },
       };
 
       const payload = { transaction };

@@ -1,5 +1,6 @@
 <turbo-frame id="<%= dom_id(transaction, :form) %>">
   <%= form_with(model: transaction, data: {
+          turbo_frame: "_top",
           controller: "shortcut",
           shortcut_transaction_id_value: transaction.id
       }) do |form| %>

@@ -1,7 +1,9 @@
 require "csv"
 
 class TransactionsController < ApplicationController
-  before_action :set_transaction, only: %i[ show edit update destroy ]
+  include ActionView::RecordIdentifier
+
+  before_action :set_transaction, only: %i[ show edit update destroy shortcut ]
 
   # GET /transactions or /transactions.json
   def index
@@ -46,6 +48,30 @@ class TransactionsController < ApplicationController
     .limit(5)
     render partial: "transactions/transaction_table", locals: { transactions: @transactions, current: @current, prev: @prev, next: @next }
   end
+
+  # GET /transactions/shortcut
+  def shortcut
+        @accounts = Account.all
+
+    @transaction.assign_attributes(params.require(:transaction).permit(
+    :raw_description,
+    :user_description,
+    :amount_dollars,
+    entries_attributes: [ :account_id, :amount, :entry_type ]
+  ))
+
+
+   respond_to do |format|
+    format.turbo_stream do
+      render turbo_stream: turbo_stream.replace(
+        dom_id(@transaction, :form),
+        partial: "transactions/form",
+        locals: { transaction: @transaction, accounts: @accounts }
+      )
+    end
+  end
+end
+
 
   # GET /transactions/1 or /transactions/1.json
   def show

@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   resources :transaction_documents
 
   resources :transactions do
+    post :shortcut, on: :member
     collection do
       get :bulk_upload
       post :bulk_upload

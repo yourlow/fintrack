@@ -7,5 +7,8 @@ import { application } from "./application"
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
 
+import ShortcutController from "./shortcut_controller"
+application.register("shortcut", ShortcutController)
+
 import TxnNavController from "./txn_nav_controller"
 application.register("txn-nav", TxnNavController)

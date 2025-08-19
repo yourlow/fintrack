@@ -1,50 +1,55 @@
-<%= form_with(model: transaction) do |form| %>
-  <% if transaction.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(transaction.errors.count, "error") %> prohibited this transaction from being saved:</h2>
-      <ul>
-        <% transaction.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
+<turbo-frame id="<%= dom_id(transaction, :form) %>">
+  <%= form_with(model: transaction, data: {
+          controller: "shortcut",
+          shortcut_transaction_id_value: transaction.id
+      }) do |form| %>
+    <% if transaction.errors.any? %>
+      <div style="color: red">
+        <h2><%= pluralize(transaction.errors.count, "error") %> prohibited this transaction from being saved:</h2>
+        <ul>
+          <% transaction.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    <div class="flex">
+      <div class="w-1/2 px-2">
+        <div>
+          <%= form.label :raw_description, class: "block mb-1" %>
+          <%= form.text_field :raw_description, class: "input w-full mb-4" %>
+        </div>
+        <div>
+          <%= form.label :user_description, class: "block mb-1" %>
+          <%= form.text_field :user_description, class: "input w-full mb-4" %>
+        </div>
+        <div>
+          <%= form.label :amount, class: "block mb-1" %>
+          <%= form.number_field :amount_dollars, class: "input w-full mb-4" %>
+        </div>
+        <div>
+          <%= form.submit class: "btn btn-primary" %>
+        </div>
+      </div>
+      <div class="w-1/2 px-2">
+        <table class="table table-zebra w-full" id="entries">
+          <thead>
+            <tr>
+              <th>Account</th>
+              <th>Type (Credit/Debit)</th>
+              <th>Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <%= form.fields_for :entries do |entries_form| %>
+              <%= render partial: "entries/entry_fields", locals: { form: entries_form, accounts: @accounts } %>
+            <% end %>
+          </tbody>
+        </table>
+        <div class="flex justify-center mt-4">
+          <%= button_tag "Add Entry", formaction: new_entry_path(transaction_id: transaction.id), formmethod: :get, data: {turbo_stream: true}, class: "btn btn-secondary" %>
+        </div>
+      </div>
     </div>
   <% end %>
-  <div class="flex">
-    <div class="w-1/2 px-2">
-      <div>
-        <%= form.label :raw_description, class: "block mb-1" %>
-        <%= form.text_field :raw_description, class: "input w-full mb-4" %>
-      </div>
-      <div>
-        <%= form.label :user_description, class: "block mb-1" %>
-        <%= form.text_field :user_description, class: "input w-full mb-4" %>
-      </div>
-      <div>
-        <%= form.label :amount, class: "block mb-1" %>
-        <%= form.number_field :amount_dollars, class: "input w-full mb-4" %>
-      </div>
-      <div>
-        <%= form.submit class: "btn btn-primary" %>
-      </div>
-    </div>
-    <div class="w-1/2 px-2">
-      <table class="table table-zebra w-full" id="entries">
-        <thead>
-          <tr>
-            <th>Account</th>
-            <th>Type (Credit/Debit)</th>
-            <th>Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          <%= form.fields_for :entries do |entries_form| %>
-            <%= render partial: "entries/entry_fields", locals: { form: entries_form, accounts: @accounts } %>
-          <% end %>
-        </tbody>
-      </table>
-      <div class="flex justify-center mt-4">
-        <%= button_tag "Add Entry", formaction: new_entry_path(transaction_id: transaction.id), formmethod: :get, data: {turbo_stream: true}, class: "btn btn-secondary" %>
-      </div>
-    </div>
-  </div>
-<% end %>
+</turbo-frame>

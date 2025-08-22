@@ -6,7 +6,7 @@
     <%= form.select :entry_type, [['Credit', 'credit'], ['Debit', 'debit']], include_blank: true, class: "select" %>
   </td>
   <td>
-    <%= form.number_field :amount, step: "0.01", class: "input input-bordered w-full" %>
+    <%= form.number_field :amount, value: (form.object.amount.present? ? form.object.amount.to_f / 100 : nil), step: "0.01", class: "input input-bordered w-full" %>
   </td>
   <td>
     <%= button_tag "Remove Entry", formaction: entry_path(form&.object.id || form.index), formmethod: :delete, data: {turbo_stream: true}, class: "btn btn-error" %>

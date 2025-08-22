@@ -53,13 +53,31 @@ class TransactionsController < ApplicationController
   def shortcut
         @accounts = Account.all
 
-    @transaction.assign_attributes(params.require(:transaction).permit(
+    tx_params = params.require(:transaction).permit(
+    :transaction_date,
     :raw_description,
     :user_description,
-    :amount_dollars,
-    entries_attributes: [ :account_id, :amount, :entry_type ]
-  ))
+    :amount,
+    entries_attributes: [
+      :id,
+      :account_id,
+      :entry_type,
+      :amount,
+      :_destroy
+    ])
+    if tx_params[:amount].present?
+      tx_params[:amount] = (BigDecimal(tx_params[:amount]) * 100).to_i
+    end
 
+    if tx_params[:entries_attributes]
+      tx_params[:entries_attributes].each do |_, entry|
+        if entry[:amount].present?
+            entry[:amount] = (BigDecimal(entry[:amount], 4) * 100).to_i
+        end
+      end
+    end
+
+    @transaction.assign_attributes(tx_params)
 
    respond_to do |format|
     format.turbo_stream do
@@ -103,19 +121,33 @@ end
 
   # PATCH/PUT /transactions/1 or /transactions/1.json
   def update
-    @transaction.update(params.require(:transaction).permit(
-      :transaction_date,
-      :raw_description,
-      :user_description,
-      :amount_dollars,  # virtual attribute on Transaction
-      entries_attributes: [
-        :id,
-        :account_id,
-        :entry_type,
-        :amount, # virtual attribute on
-        :_destroy
-      ]
-    ))
+    tx_params = params.require(:transaction).permit(
+    :transaction_date,
+    :raw_description,
+    :user_description,
+    :amount,
+    entries_attributes: [
+      :id,
+      :account_id,
+      :entry_type,
+      :amount,
+      :_destroy
+    ])
+
+    if tx_params[:amount].present?
+      tx_params[:amount] = (BigDecimal(tx_params[:amount]) * 100).to_i
+    end
+
+    if tx_params[:entries_attributes]
+      tx_params[:entries_attributes].each do |_, entry|
+        if entry[:amount].present?
+            entry[:amount] = (BigDecimal(entry[:amount], 4) * 100).to_i
+        end
+      end
+    end
+
+    @transaction.update(tx_params)
+    @accounts = Account.all
 
     @current = @transaction.next
     @prev = @current.prev
@@ -124,7 +156,11 @@ end
     .where("transaction_date > :d OR (transaction_date = :d AND id >= :i)",
            d: @current.transaction_date, i: @current.id)
     .limit(5)
-    render partial: "transactions/transaction_table", locals: { transactions: @transactions, current: @current, prev: @prev, next: @next }
+    render turbo_stream: turbo_stream.replace(
+      "transaction_table",
+      partial: "transactions/transaction_table",
+      locals: { transactions: @transactions, current: @current, prev: @prev, next: @next }
+    )
   end
 
   # DELETE /transactions/1 or /transactions/1.json
@@ -157,8 +193,8 @@ end
           line_no += 1
           next if row.to_h.values.all?(&:blank?)
 
-          amount_cents = parse_amount_to_cents(row["Amount"])
-          raise StandardError, "Invalid amount on line #{line_no}: #{row['Amount'].inspect}" if amount_cents.nil?
+          amount = parse_amount(row["Amount"])
+          raise StandardError, "Invalid amount on line #{line_no}: #{row['Amount'].inspect}" if amount.nil?
           # debugger
           tx_date = Date.strptime(row["Date"].strip, "%m/%d/%Y")
           raise StandardError, "Invalid date on line #{line_no}: #{row['Date'].inspect}" if tx_date.nil?
@@ -169,7 +205,7 @@ end
           Transaction.create!(
             raw_description:  desc,
             user_description: nil,
-            amount:           amount_cents,
+            amount:           amount,
             transaction_date: tx_date,
           )
 
@@ -193,14 +229,13 @@ end
 
   private
 
-  # Converts strings like "-$250.00", "$1,234.56", "1,234.56-", "(1,234.56)" to integer cents.
-  def parse_amount_to_cents(str)
+  def parse_amount(str)
     return nil if str.blank?
 
     s = str.strip
     neg = false
 
-    # Handle parentheses for negatives "(123.45)"
+    # Handle parentheses "(123.45)"
     if s.start_with?("(") && s.end_with?(")")
       neg = true
       s = s[1..-2]
@@ -212,25 +247,24 @@ end
       s = s[0..-2]
     end
 
-    # Remove currency symbols and thousands separators
+    # Remove $ and commas
     s = s.gsub(/[,$\s]/, "")
 
-    # Handle leading negative like "-123.45" or "-$123.45"
+    # Handle leading negative
     if s.start_with?("-")
       neg = true
       s = s[1..]
     end
 
-    # At this point s should be digits with optional decimal
+    # Only accept digits + optional .xx
     return nil unless s.match?(/\A\d+(\.\d{1,2})?\z/)
 
-    cents = (BigDecimal(s) * 100).to_i
-    neg ? -cents : cents
+    # Convert to cents
+    amount = (BigDecimal(s) * 100).to_i
+    neg ? -amount : amount
   rescue ArgumentError
     nil
   end
-
-
 
 
   # Use callbacks to share common setup or constraints between actions.

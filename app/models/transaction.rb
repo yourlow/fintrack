@@ -15,15 +15,6 @@ class Transaction < ApplicationRecord
 
 
 
-  def amount_dollars
-    return nil if amount.nil?
-    (amount.to_f / 100).round(2)
-  end
-
-  def amount_dollars=(val)
-    self.amount = val.present? ? (BigDecimal(val) * 100).to_i : nil
-  end
-
   def next
   Transaction.ordered
               .where("transaction_date > :d OR (transaction_date = :d AND id > :i)",

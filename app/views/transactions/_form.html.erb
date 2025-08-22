@@ -26,7 +26,7 @@
         </div>
         <div>
           <%= form.label :amount, class: "block mb-1" %>
-          <%= form.number_field :amount_dollars, class: "input w-full mb-4" %>
+              <%= form.number_field :amount, value: (form.object.amount.to_f / 100 if form.object.amount), class: "input w-full mb-4" %>
         </div>
         <div>
           <%= form.submit class: "btn btn-primary" %>

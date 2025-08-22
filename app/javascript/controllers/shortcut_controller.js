@@ -26,26 +26,24 @@ export default class extends Controller {
       event.preventDefault();
 
       const formData = new FormData(this.element);
-      formData.delete("_method"); // remove the hidden patch override
+      formData.delete("_method");
 
       // Convert form data into nested JSON
       const transaction = {};
       formData.forEach((value, key) => {
-        const match = key.match(/^transaction\[(.+)\]$/);
+        const match = key.match(/^transaction\[(.+)\]$/); 
         if (match) {
           transaction[match[1]] = value;
         }
       });
 
-      let amount = parseFloat(transaction.amount_dollars);
+      let amount = Math.abs(transaction.amount)  ;
       if (isNaN(amount)) amount = 0;
-
-      const half = Math.abs(amount) / 2;
 
       // Add shortcut-generated entries
       transaction.entries_attributes = {
-        0: { account_id: 4, entry_type: "debit", amount: half },
-        1: { account_id: 5, entry_type: "credit", amount: half },
+        0: { account_id: 2, entry_type: "debit", amount: amount },
+        1: { account_id: 1, entry_type: "credit", amount: amount },
       };
 
       const payload = { transaction };

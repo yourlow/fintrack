@@ -4,13 +4,12 @@ class Transaction < ApplicationRecord
 
   accepts_nested_attributes_for :entries
 
-
-
-
-
   scope :pending, -> { where(balanced: false) }
 
   scope :ordered, -> { order(transaction_date: :asc, id: :asc) }
+
+  before_save :update_balanced
+
 
 
 
@@ -28,5 +27,10 @@ class Transaction < ApplicationRecord
                       d: transaction_date, i: id)
                .reverse_order
                .first
+  end
+
+  private
+  def update_balanced
+    self.balanced = entries.sum(:amount) == amount
   end
 end

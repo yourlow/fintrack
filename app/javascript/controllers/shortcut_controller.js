@@ -16,6 +16,15 @@ export default class extends Controller {
   handleShortcut = (event) => {
     // Ctrl+1
 
+    shorcuts.forEach((shortcut) => {
+
+
+      
+
+
+    })
+
+
     if (event.ctrlKey && event.key === "Enter") {
       event.preventDefault();
       this.element.requestSubmit(); // submits the form
@@ -25,7 +34,33 @@ export default class extends Controller {
     if (event.ctrlKey && event.key === "1") {
       event.preventDefault();
 
-      const formData = new FormData(this.element);
+
+      const payload = { transaction };
+
+      const token = document.querySelector("meta[name=csrf-token]").content;
+
+      fetch(`/transactions/${this.transactionIdValue}/shortcut`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": token,
+          Accept: "text/vnd.turbo-stream.html",
+        },
+        body: JSON.stringify(payload),
+      })
+        .then((r) => r.text())
+        .then((html) => Turbo.renderStreamMessage(html));
+    }
+  };
+
+
+
+  function shortcut_key_decoder() {
+    
+  }
+
+  function process_shortcut(element, shortcuts) {
+          const formData = new FormData(element);
       formData.delete("_method");
 
       // Convert form data into nested JSON
@@ -46,21 +81,5 @@ export default class extends Controller {
         1: { account_id: 1, entry_type: "credit", amount: amount },
       };
 
-      const payload = { transaction };
-
-      const token = document.querySelector("meta[name=csrf-token]").content;
-
-      fetch(`/transactions/${this.transactionIdValue}/shortcut`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": token,
-          Accept: "text/vnd.turbo-stream.html",
-        },
-        body: JSON.stringify(payload),
-      })
-        .then((r) => r.text())
-        .then((html) => Turbo.renderStreamMessage(html));
-    }
-  };
+  }
 }

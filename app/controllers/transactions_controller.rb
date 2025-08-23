@@ -19,6 +19,7 @@ class TransactionsController < ApplicationController
     end
 
 
+
     @prev = @current.prev
     @next = @current.next
 
@@ -154,7 +155,7 @@ end
     @next = @current.next
     @transactions = Transaction.ordered
     .where("transaction_date > :d OR (transaction_date = :d AND id >= :i)",
-           d: @current.transaction_date, i: @current.id)
+          d: @current.transaction_date, i: @current.id)
     .limit(5)
     render turbo_stream: turbo_stream.replace(
       "transaction_table",

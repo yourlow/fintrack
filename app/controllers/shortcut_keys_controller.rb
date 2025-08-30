@@ -12,11 +12,14 @@ class ShortcutKeysController < ApplicationController
 
   # GET /shortcut_keys/new
   def new
+    @accounts = Account.all
+
     @shortcut_key = ShortcutKey.new
   end
 
   # GET /shortcut_keys/1/edit
   def edit
+  @accounts = Account.all
   end
 
   # POST /shortcut_keys or /shortcut_keys.json
@@ -65,6 +68,15 @@ class ShortcutKeysController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def shortcut_key_params
-      params.expect(shortcut_key: [ :name, :combination ])
+      params.require(:shortcut_key).permit(
+            :name,
+            :combination,
+            shortcut_entries_attributes: [
+              :id,
+              :account_id,
+              :entry_type,
+              :_destroy
+            ]
+          )
     end
 end

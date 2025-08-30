@@ -49,6 +49,25 @@
       <span class="label-text-alt">Click the field, then press your shortcut</span>
     </label>
   </div>
+  <div class="w-1/2 px-2">
+    <table class="table table-zebra w-full" id="shortcut_entries">
+      <thead>
+        <tr>
+          <th>Account</th>
+          <th>Type (Credit/Debit)</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= form.fields_for :shortcut_entries do |shortcut_entries_form| %>
+          <%= render partial: "shortcut_entries/shortcut_entry_fields", locals: { form: shortcut_entries_form, accounts: @accounts } %>
+        <% end %>
+      </tbody>
+    </table>
+    <div class="flex justify-center mt-4">
+      <%= button_tag "Add Entry", formaction: new_shortcut_entry_path, formmethod: :get, data: {turbo_stream: true}, class: "btn btn-secondary" %>
+    </div>
+  </div>
   <div class="form-control">
     <%= form.submit "Save Shortcut", class: "btn btn-primary" %>
   </div>

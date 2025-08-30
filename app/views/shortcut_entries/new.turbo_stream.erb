@@ -1,0 +1,5 @@
+<%= turbo_stream.append "shortcut_entries" do %>
+  <%= fields_for 'shortcut_key[shortcut_entries_attributes][]', ShortcutEntry.new, index: Time.current.to_i do |form| %>
+    <%= render "shortcut_entry_fields", form: form %>
+  <% end %>
+<% end %>

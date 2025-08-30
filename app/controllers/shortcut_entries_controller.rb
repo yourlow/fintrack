@@ -12,6 +12,8 @@ class ShortcutEntriesController < ApplicationController
 
   # GET /shortcut_entries/new
   def new
+    @accounts = Account.all
+
     @shortcut_entry = ShortcutEntry.new
   end
 

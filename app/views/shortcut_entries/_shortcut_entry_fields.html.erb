@@ -1,0 +1,11 @@
+<tr id="shortcut_entry_fields_<%= form&.object&.id || form.index %>">
+  <td>
+    <%= form.select :account_id, @accounts.collect { |a| [a.name, a.id] }, include_blank: true, class: "select" %>
+  </td>
+  <td>
+    <%= form.select :entry_type, [['Credit', 'credit'], ['Debit', 'debit']], include_blank: true, class: "select" %>
+  </td>
+  <td>
+    <%= button_tag "Remove Shortcut Entry", formaction: shortcut_entry_path(form&.object&.id || form.index), formmethod: :delete, data: {turbo_stream: true}, class: "btn btn-error" %>
+  </td>
+</tr>

@@ -1,0 +1,55 @@
+<script>
+  document.addEventListener("turbo:load", () => {
+    const input = document.getElementById("hotkey_input");
+    if (!input) return;
+
+    input.onkeydown = (e) => {
+      e.preventDefault();
+      let keys = [];
+      if (e.ctrlKey) keys.push("Ctrl");
+      if (e.altKey) keys.push("Alt");
+      if (e.shiftKey) keys.push("Shift");
+      if (e.metaKey) keys.push("Meta");
+
+      if (!["Control", "Shift", "Alt", "Meta"].includes(e.code)) {
+        let key = e.code.replace(/^Key/, "").replace(/^Digit/, "");
+        keys.push(key);
+      }
+
+      input.value = keys.join("+");
+    };
+  });
+</script>
+<%= form_with(model: shortcut_key, class: "space-y-6") do |form| %>
+  <% if shortcut_key.errors.any? %>
+    <div class="alert alert-error">
+      <span><%= pluralize(shortcut_key.errors.count, "error") %> prohibited this shortcut from being saved:</span>
+      <ul class="list-disc list-inside">
+        <% shortcut_key.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div class="form-control">
+    <%= form.label :name, class: "label" do %>
+      <span class="label-text">Name</span>
+    <% end %>
+    <%= form.text_field :name, class: "input input-bordered w-full" %>
+  </div>
+  <div class="form-control">
+    <%= form.label :combination, class: "label" do %>
+      <span class="label-text">Shortcut Combination</span>
+    <% end %>
+    <%= form.text_field :combination,
+          id: "hotkey_input",
+          readonly: true,
+          class: "input input-bordered w-full cursor-pointer" %>
+    <label class="label">
+      <span class="label-text-alt">Click the field, then press your shortcut</span>
+    </label>
+  </div>
+  <div class="form-control">
+    <%= form.submit "Save Shortcut", class: "btn btn-primary" %>
+  </div>
+<% end %>

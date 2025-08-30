@@ -1,0 +1,12 @@
+<% content_for :title, "Editing shortcut key" %>
+
+<h1>Editing shortcut key</h1>
+
+<%= render "form", shortcut_key: @shortcut_key %>
+
+<br>
+
+<div>
+  <%= link_to "Show this shortcut key", @shortcut_key %> |
+  <%= link_to "Back to shortcut keys", shortcut_keys_path %>
+</div>

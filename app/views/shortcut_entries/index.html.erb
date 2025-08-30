@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Shortcut entries" %>
+
+<h1>Shortcut entries</h1>
+
+<div id="shortcut_entries">
+  <% @shortcut_entries.each do |shortcut_entry| %>
+    <%= render shortcut_entry %>
+    <p>
+      <%= link_to "Show this shortcut entry", shortcut_entry %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New shortcut entry", new_shortcut_entry_path %>

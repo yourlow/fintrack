@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @shortcut_key %>
+
+<div>
+  <%= link_to "Edit this shortcut key", edit_shortcut_key_path(@shortcut_key) %> |
+  <%= link_to "Back to shortcut keys", shortcut_keys_path %>
+
+  <%= button_to "Destroy this shortcut key", @shortcut_key, method: :delete %>
+</div>

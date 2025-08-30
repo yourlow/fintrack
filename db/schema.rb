@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_22_082840) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_30_220755) do
   create_table "accounts", force: :cascade do |t|
     t.string "name"
     t.string "account_type"
@@ -23,6 +23,23 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_22_082840) do
     t.integer "account_id"
     t.integer "amount"
     t.string "entry_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "shortcut_entries", force: :cascade do |t|
+    t.integer "shortcut_key_id", null: false
+    t.integer "account_id", null: false
+    t.string "entry_type", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_shortcut_entries_on_account_id"
+    t.index ["shortcut_key_id"], name: "index_shortcut_entries_on_shortcut_key_id"
+  end
+
+  create_table "shortcut_keys", force: :cascade do |t|
+    t.string "name"
+    t.string "combination"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -51,4 +68,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_22_082840) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
+
+  add_foreign_key "shortcut_entries", "accounts"
+  add_foreign_key "shortcut_entries", "shortcut_keys"
 end

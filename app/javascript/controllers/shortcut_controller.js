@@ -16,14 +16,7 @@ export default class extends Controller {
   handleShortcut = (event) => {
     // Ctrl+1
 
-    shorcuts.forEach((shortcut) => {
-
-
-      
-
-
-    })
-
+    shorcuts.forEach((shortcut) => {});
 
     if (event.ctrlKey && event.key === "Enter") {
       event.preventDefault();
@@ -33,7 +26,6 @@ export default class extends Controller {
 
     if (event.ctrlKey && event.key === "1") {
       event.preventDefault();
-
 
       const payload = { transaction };
 
@@ -53,33 +45,30 @@ export default class extends Controller {
     }
   };
 
+  // function shortcut_key_decoder() {
 
+  // }
 
-  function shortcut_key_decoder() {
-    
-  }
+  process_shortcut = (element, shortcuts) => {
+    const formData = new FormData(element);
+    formData.delete("_method");
 
-  function process_shortcut(element, shortcuts) {
-          const formData = new FormData(element);
-      formData.delete("_method");
+    // Convert form data into nested JSON
+    const transaction = {};
+    formData.forEach((value, key) => {
+      const match = key.match(/^transaction\[(.+)\]$/);
+      if (match) {
+        transaction[match[1]] = value;
+      }
+    });
 
-      // Convert form data into nested JSON
-      const transaction = {};
-      formData.forEach((value, key) => {
-        const match = key.match(/^transaction\[(.+)\]$/); 
-        if (match) {
-          transaction[match[1]] = value;
-        }
-      });
+    let amount = Math.abs(transaction.amount);
+    if (isNaN(amount)) amount = 0;
 
-      let amount = Math.abs(transaction.amount)  ;
-      if (isNaN(amount)) amount = 0;
-
-      // Add shortcut-generated entries
-      transaction.entries_attributes = {
-        0: { account_id: 2, entry_type: "debit", amount: amount },
-        1: { account_id: 1, entry_type: "credit", amount: amount },
-      };
-
-  }
+    // Add shortcut-generated entries
+    transaction.entries_attributes = {
+      0: { account_id: 2, entry_type: "debit", amount: amount },
+      1: { account_id: 1, entry_type: "credit", amount: amount },
+    };
+  };
 }

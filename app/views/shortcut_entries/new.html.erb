@@ -1,0 +1,11 @@
+<% content_for :title, "New shortcut entry" %>
+
+<h1>New shortcut entry</h1>
+
+<%= render "form", shortcut_entry: @shortcut_entry %>
+
+<br>
+
+<div>
+  <%= link_to "Back to shortcut entries", shortcut_entries_path %>
+</div>

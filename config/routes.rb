@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :shortcut_entries
+  resources :shortcut_keys
   resources :entries
   resources :transaction_documents
 

@@ -10,8 +10,20 @@ export default class extends Controller {
       document.getElementById("shortcuts-data").textContent
     );
 
-    // Build handlers
-    this.handlers = this.shortcuts.map((shortcut) => {
+    this.handlers = [];
+
+    // Special hardcoded Ctrl+Enter for submitting the form
+    const submitHandler = (event) => {
+      if (event.ctrlKey && event.key === "Enter") {
+        event.preventDefault();
+        this.element.requestSubmit();
+      }
+    };
+    document.addEventListener("keydown", submitHandler);
+    this.handlers.push(submitHandler);
+
+    // JSON-driven shortcuts
+    this.shortcuts.forEach((shortcut) => {
       const actions = this.decodeShortcuts(shortcut.combination);
 
       const handler = (event) => {
@@ -39,7 +51,7 @@ export default class extends Controller {
       };
 
       document.addEventListener("keydown", handler);
-      return handler;
+      this.handlers.push(handler);
     });
   }
 
@@ -47,6 +59,7 @@ export default class extends Controller {
     this.handlers.forEach((handler) => {
       document.removeEventListener("keydown", handler);
     });
+    this.handlers = [];
   }
 
   decodeShortcuts(keyString) {

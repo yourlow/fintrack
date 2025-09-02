@@ -31,6 +31,7 @@ class TransactionsController < ApplicationController
   end
 
   def frame
+    @shortcuts = ShortcutKey.all
     @accounts = Account.all
     curr = params["curr"]
 

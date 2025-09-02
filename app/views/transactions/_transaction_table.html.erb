@@ -21,6 +21,14 @@
       }
     });
   </script>
+  <script id="shortcuts-data" type="application/json">
+    <%= raw @shortcuts.as_json(
+          only: [:id, :name, :combination],
+          include: {
+            shortcut_entries: { only: [:id, :entry_type, :account_id] }
+          }
+        ).to_json %>
+  </script>
   <div>
     <table class="table table-zebra table-sm w-5/6">
       <thead></thead>
@@ -40,7 +48,7 @@
         <td><%= transaction.raw_description %></td>
         <td><%= transaction.user_description %></td>
         <td>
-            <%= number_to_currency(transaction.amount.to_f / 100) %>
+          <%= number_to_currency(transaction.amount.to_f / 100) %>
         </td>
         <td>
           <%= button_to "Delete", transaction_path(transaction.id), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-error" %>

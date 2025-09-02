@@ -7,7 +7,8 @@ class TransactionsController < ApplicationController
 
   # GET /transactions or /transactions.json
   def index
-      @accounts = Account.all
+    @shortcuts = ShortcutKey.all
+    @accounts = Account.all
 
     curr = params["curr"]
 

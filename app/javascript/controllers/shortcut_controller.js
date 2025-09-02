@@ -5,70 +5,88 @@ export default class extends Controller {
   static values = { transactionId: Number };
 
   connect() {
-    this.boundHandleShortcut = this.handleShortcut.bind(this);
-    document.addEventListener("keydown", this.boundHandleShortcut);
+    // Parse shortcuts from DOM
+    this.shortcuts = JSON.parse(
+      document.getElementById("shortcuts-data").textContent
+    );
+
+    // Build handlers
+    this.handlers = this.shortcuts.map((shortcut) => {
+      const actions = this.decodeShortcuts(shortcut.combination);
+
+      const handler = (event) => {
+        if (actions.every((fn) => fn(event))) {
+          event.preventDefault();
+
+          const payload = {
+            transaction: processShortcut(this.element, shortcut),
+          };
+
+          const token = document.querySelector("meta[name=csrf-token]").content;
+
+          fetch(`/transactions/${this.transactionIdValue}/shortcut`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-Token": token,
+              Accept: "text/vnd.turbo-stream.html",
+            },
+            body: JSON.stringify(payload),
+          })
+            .then((r) => r.text())
+            .then((html) => Turbo.renderStreamMessage(html));
+        }
+      };
+
+      document.addEventListener("keydown", handler);
+      return handler;
+    });
   }
 
   disconnect() {
-    document.removeEventListener("keydown", this.boundHandleShortcut);
+    this.handlers.forEach((handler) => {
+      document.removeEventListener("keydown", handler);
+    });
   }
 
-  handleShortcut = (event) => {
-    // Ctrl+1
-
-    shorcuts.forEach((shortcut) => {});
-
-    if (event.ctrlKey && event.key === "Enter") {
-      event.preventDefault();
-      this.element.requestSubmit(); // submits the form
-      return;
-    }
-
-    if (event.ctrlKey && event.key === "1") {
-      event.preventDefault();
-
-      const payload = { transaction };
-
-      const token = document.querySelector("meta[name=csrf-token]").content;
-
-      fetch(`/transactions/${this.transactionIdValue}/shortcut`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": token,
-          Accept: "text/vnd.turbo-stream.html",
-        },
-        body: JSON.stringify(payload),
-      })
-        .then((r) => r.text())
-        .then((html) => Turbo.renderStreamMessage(html));
-    }
-  };
-
-  // function shortcut_key_decoder() {
-
-  // }
-
-  process_shortcut = (element, shortcuts) => {
-    const formData = new FormData(element);
-    formData.delete("_method");
-
-    // Convert form data into nested JSON
-    const transaction = {};
-    formData.forEach((value, key) => {
-      const match = key.match(/^transaction\[(.+)\]$/);
-      if (match) {
-        transaction[match[1]] = value;
+  decodeShortcuts(keyString) {
+    const keys = keyString.split("+");
+    return keys.map((key) => {
+      if (key === "Ctrl") {
+        return (event) => event.ctrlKey;
+      } else {
+        return (event) => event.key === key;
       }
     });
+  }
+}
 
-    let amount = Math.abs(transaction.amount);
-    if (isNaN(amount)) amount = 0;
+// helper function
+function processShortcut(element, shortcut) {
+  const formData = new FormData(element);
+  formData.delete("_method");
 
-    // Add shortcut-generated entries
-    transaction.entries_attributes = {
-      0: { account_id: 2, entry_type: "debit", amount: amount },
-      1: { account_id: 1, entry_type: "credit", amount: amount },
+  // Convert form data into nested JSON
+  const transaction = {};
+  formData.forEach((value, key) => {
+    const match = key.match(/^transaction\[(.+)\]$/);
+    if (match) {
+      transaction[match[1]] = value;
+    }
+  });
+
+  let amount = Math.abs(transaction.amount);
+  if (isNaN(amount)) amount = 0;
+
+  transaction.entries_attributes = {};
+
+  shortcut.shortcut_entries.forEach((entry, idx) => {
+    transaction.entries_attributes[idx] = {
+      account_id: entry.account_id,
+      entry_type: entry.entry_type,
+      amount: amount,
     };
-  };
+  });
+
+  return transaction;
 }

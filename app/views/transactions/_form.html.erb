@@ -2,7 +2,8 @@
   <%= form_with(model: transaction, data: {
           turbo_frame: "_top",
           controller: "shortcut",
-          shortcut_transaction_id_value: transaction.id
+          shortcut_transaction_id_value: transaction.id,
+          shortcut_shortcuts_value: @shortcuts
       }) do |form| %>
     <% if transaction.errors.any? %>
       <div style="color: red">

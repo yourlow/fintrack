@@ -4,13 +4,27 @@
 
 <h1>Shortcut keys</h1>
 
-<div id="shortcut_keys">
-  <% @shortcut_keys.each do |shortcut_key| %>
-    <%= render shortcut_key %>
-    <p>
-      <%= link_to "Show this shortcut key", shortcut_key %>
-    </p>
-  <% end %>
+<div class="overflow-x-auto">
+  <table class="table table-zebra w-full">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Key Combination</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @shortcut_keys.each do |shortcut_key| %>
+        <tr>
+          <td><%= shortcut_key.name %></td>
+          <td><%= shortcut_key.combination %></td>
+          <td>
+            <%= link_to "Show", shortcut_key, class: "btn btn-sm btn-primary" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 </div>
 
-<%= link_to "New shortcut key", new_shortcut_key_path %>
+<%= link_to "New shortcut key", new_shortcut_key_path, class: "btn btn-success mt-4" %>

@@ -1,10 +1,16 @@
-<p style="color: green"><%= notice %></p>
-
-<%= render @shortcut_key %>
-
-<div>
-  <%= link_to "Edit this shortcut key", edit_shortcut_key_path(@shortcut_key) %> |
-  <%= link_to "Back to shortcut keys", shortcut_keys_path %>
-
-  <%= button_to "Destroy this shortcut key", @shortcut_key, method: :delete %>
+<%# Add DaisyUI classes for better styling %>
+<% if notice.present? %>
+  <div class="alert alert-success mb-4">
+    <span><%= notice %></span>
+  </div>
+<% end %>
+<div class="card bg-base-100 shadow-xl mb-6">
+  <div class="card-body">
+    <%= render @shortcut_key %>
+  </div>
+</div>
+<div class="flex gap-2">
+  <%= link_to "Edit this shortcut key", edit_shortcut_key_path(@shortcut_key), class: "btn btn-primary" %>
+  <%= link_to "Back to shortcut keys", shortcut_keys_path, class: "btn btn-secondary" %>
+  <%= button_to "Destroy this shortcut key", @shortcut_key, method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-error" %>
 </div>

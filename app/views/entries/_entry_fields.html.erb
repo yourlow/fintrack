@@ -3,12 +3,38 @@
     <%= form.select :account_id, @accounts.collect { |a| [a.name, a.id] }, include_blank: true, class: "select" %>
   </td>
   <td>
-    <%= form.select :entry_type, [['Credit', 'credit'], ['Debit', 'debit']], include_blank: true, class: "select" %>
+    <%= form.select :entry_type, [['Credit', 'credit'], ['Debit', 'debit']], include_blank: true, class: "select entry-type-select", data: { action: "change->toggle-amount#toggle" } %>
   </td>
   <td>
-    <%= form.number_field :amount, value: (form.object.amount.present? ? form.object.amount.to_f / 100 : nil), step: "0.01", class: "input input-bordered w-full" %>
+    <%= form.number_field :credit_amount, value: (form.object.entry_type == "credit" && form.object.amount.present? ? form.object.amount.to_f / 100 : nil), step: "0.01", class: "input input-bordered w-full credit-amount-field", disabled: (form.object.entry_type != "credit") %>
+  </td>
+  <td>
+    <%= form.number_field :debit_amount, value: (form.object.entry_type == "debit" && form.object.amount.present? ? form.object.amount.to_f / 100 : nil), step: "0.01", class: "input input-bordered w-full debit-amount-field", disabled: (form.object.entry_type != "debit") %>
   </td>
   <td>
     <%= button_tag "Remove Entry", formaction: entry_path(form&.object.id || form.index), formmethod: :delete, data: {turbo_stream: true}, class: "btn btn-error" %>
   </td>
 </tr>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll(".entry-type-select").forEach(function(select) {
+      select.addEventListener("change", function(e) {
+        var tr = e.target.closest("tr");
+        var creditField = tr.querySelector(".credit-amount-field");
+        var debitField = tr.querySelector(".debit-amount-field");
+        creditField.value = "";
+        debitField.value = "";
+        if (e.target.value === "credit") {
+          creditField.disabled = false;
+          debitField.disabled = true;
+        } else if (e.target.value === "debit") {
+          creditField.disabled = true;
+          debitField.disabled = false;
+        } else {
+          creditField.disabled = true;
+          debitField.disabled = true;
+        }
+      });
+    });
+  });
+</script>

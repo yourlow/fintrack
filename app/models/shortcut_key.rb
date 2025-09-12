@@ -3,7 +3,7 @@ class ShortcutKey < ApplicationRecord
 
   validates :name, presence: true
   validates :combination, presence: true
-  validate :must_have_at_least_two_entries
+  # validate :must_have_at_least_two_entries
 
 
   accepts_nested_attributes_for :shortcut_entries, allow_destroy: true

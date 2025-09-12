@@ -54,7 +54,9 @@ class TransactionsController < ApplicationController
 
   # GET /transactions/shortcut
   def shortcut
-        @accounts = Account.all
+    @shortcuts = ShortcutKey.all
+
+    @accounts = Account.all
 
     tx_params = params.require(:transaction).permit(
     :transaction_date,
@@ -124,6 +126,8 @@ end
 
   # PATCH/PUT /transactions/1 or /transactions/1.json
   def update
+    @shortcuts = ShortcutKey.all
+
     tx_params = params.require(:transaction).permit(
     :transaction_date,
     :raw_description,
@@ -133,12 +137,12 @@ end
       :id,
       :account_id,
       :entry_type,
-      :amount,
+      :amount
       :_destroy
     ])
 
-    if tx_params[:amount].present?
-      tx_params[:amount] = (BigDecimal(tx_params[:amount]) * 100).to_i
+    if tx_params[:credit_amount].present?
+      tx_params[:credit_amount] = (BigDecimal(tx_params[:credit_amount]) * 100).to_i
     end
 
     if tx_params[:entries_attributes]
@@ -198,7 +202,7 @@ end
 
           amount = parse_amount(row["Amount"])
           raise StandardError, "Invalid amount on line #{line_no}: #{row['Amount'].inspect}" if amount.nil?
-          # debugger
+
           tx_date = Date.strptime(row["Date"].strip, "%m/%d/%Y")
           raise StandardError, "Invalid date on line #{line_no}: #{row['Date'].inspect}" if tx_date.nil?
 

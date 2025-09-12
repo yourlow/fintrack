@@ -8,7 +8,6 @@ class Transaction < ApplicationRecord
 
   scope :ordered, -> { order(transaction_date: :asc, id: :asc) }
 
-  before_save :update_balanced
 
 
 
@@ -29,8 +28,19 @@ class Transaction < ApplicationRecord
                .first
   end
 
-  private
+
   def update_balanced
-    self.balanced = entries.sum(:amount) == amount
+    return if entries.count == 0
+
+    net = entries.sum(
+    "CASE entry_type
+       WHEN 'debit'  THEN amount
+       WHEN 'credit' THEN -amount
+     END"
+  )
+  self.balanced = ((net - amount) == 0)
+
+
+  self.save!
   end
 end

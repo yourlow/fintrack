@@ -37,6 +37,7 @@
         <th scope="col">Raw Description</th>
         <th scope="col">User Description</th>
         <th scope="col">Amount</th>
+        <th scope="col">Balanced</th>
         <th scope="col">Actions</th>
       </tr>
     </thead>
@@ -50,6 +51,7 @@
         <td>
           <%= number_to_currency(transaction.amount.to_f / 100) %>
         </td>
+        <td><%= transaction.balanced %>, <%= transaction.entries.sum(:amount) %>, <%= transaction.amount%></td>
         <td>
           <%= button_to "Delete", transaction_path(transaction.id), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-error" %>
         </td>

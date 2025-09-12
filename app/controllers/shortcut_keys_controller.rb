@@ -1,5 +1,5 @@
 class ShortcutKeysController < ApplicationController
-  before_action :set_shortcut_key, only: %i[ show edit update destroy ]
+  before_action :set_shortcut_key, only: %i[ edit update destroy ]
 
   # GET /shortcut_keys or /shortcut_keys.json
   def index
@@ -8,6 +8,7 @@ class ShortcutKeysController < ApplicationController
 
   # GET /shortcut_keys/1 or /shortcut_keys/1.json
   def show
+    @shortcut_key = ShortcutKey.preload(shortcut_entries: :account).find(params.expect(:id))
   end
 
   # GET /shortcut_keys/new

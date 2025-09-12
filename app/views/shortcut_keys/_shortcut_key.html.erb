@@ -1,12 +1,30 @@
-<div id="<%= dom_id shortcut_key %>">
-  <p>
-    <strong>Name:</strong>
-    <%= shortcut_key.name %>
-  </p>
-
-  <p>
-    <strong>Combination:</strong>
-    <%= shortcut_key.combination %>
-  </p>
-
+<div id="<%= dom_id shortcut_key %>" class="card bg-base-100 shadow-md p-4 mb-4">
+  <div class="card-body">
+    <h2 class="card-title text-lg font-bold">
+      <%= shortcut_key.name %>
+    </h2>
+    <p class="text-sm text-gray-500">
+      <span class="font-semibold">Combination:</span>
+      <span class="badge badge-primary ml-2"><%= shortcut_key.combination %></span>
+    </p>
+    <% if shortcut_key.shortcut_entries.any? %>
+      <table class="table-auto w-1/2 mt-4">
+        <thead>
+          <tr>
+            <th class="px-4 py-2 text-left">Account Name</th>
+            <th class="px-4 py-2 text-left">Account Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% shortcut_key.shortcut_entries.each do |entry| %>
+            <% account = entry.account %>
+            <tr>
+              <td class="border px-4 py-2"><%= account&.name %></td>
+              <td class="border px-4 py-2"><%= entry.entry_type %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% end %>
+  </div>
 </div>

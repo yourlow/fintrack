@@ -88,7 +88,7 @@ function processShortcut(element, shortcut) {
     }
   });
 
-  let credit_amount = Math.abs(transaction.credit_amount);
+  let amount = Math.abs(transaction.amount);
   if (isNaN(amount)) amount = 0;
 
   transaction.entries_attributes = {};

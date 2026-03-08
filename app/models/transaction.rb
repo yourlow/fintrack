@@ -14,14 +14,14 @@ class Transaction < ApplicationRecord
 
 
   def next
-  Transaction.ordered
+  Transaction.ordered.pending
               .where("transaction_date > :d OR (transaction_date = :d AND id > :i)",
                     d: transaction_date, i: id)
               .first
   end
 
   def prev
-    Transaction.ordered
+    Transaction.ordered.pending
                .where("transaction_date < :d OR (transaction_date = :d AND id < :i)",
                       d: transaction_date, i: id)
                .reverse_order
@@ -38,7 +38,15 @@ class Transaction < ApplicationRecord
        WHEN 'credit' THEN -amount
      END"
   )
-  self.balanced = ((net - amount) == 0)
+
+
+
+  debits = entries.debits.sum(:amount)
+
+  credits = entries.credits.sum(:amount)
+
+  self.balanced = (debits == credits) && (debits == amount) && (credits == amount)
+
 
 
   self.save!

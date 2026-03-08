@@ -27,7 +27,10 @@ class TransactionsController < ApplicationController
     @transactions = Transaction.ordered
     .where("transaction_date > :d OR (transaction_date = :d AND id >= :i)",
            d: @current.transaction_date, i: @current.id)
-    .limit(5)
+
+    @transasctions = @transactions.pending
+
+    @transactions = @transactions.limit(5)
   end
 
   def frame
@@ -48,7 +51,11 @@ class TransactionsController < ApplicationController
     @transactions = Transaction.ordered
     .where("transaction_date > :d OR (transaction_date = :d AND id >= :i)",
            d: @current.transaction_date, i: @current.id)
-    .limit(5)
+
+
+    @transactions = @transactions.pending
+
+    @transactions = @transactions.limit(5)
     render partial: "transactions/transaction_table", locals: { transactions: @transactions, current: @current, prev: @prev, next: @next }
   end
 
@@ -137,19 +144,23 @@ end
       :id,
       :account_id,
       :entry_type,
-      :amount
+      :debit_amount,
+      :credit_amount,
       :_destroy
     ])
 
-    if tx_params[:credit_amount].present?
-      tx_params[:credit_amount] = (BigDecimal(tx_params[:credit_amount]) * 100).to_i
-    end
+    tx_params[:amount] = (BigDecimal(tx_params[:amount], 4) * 100).to_i
 
     if tx_params[:entries_attributes]
       tx_params[:entries_attributes].each do |_, entry|
-        if entry[:amount].present?
-            entry[:amount] = (BigDecimal(entry[:amount], 4) * 100).to_i
+        if entry[:debit_amount].present?
+            entry[:amount] = (BigDecimal(entry[:debit_amount], 4) * 100).to_i
+        else
+          entry[:amount] = (BigDecimal(entry[:credit_amount], 4) * 100).to_i
         end
+
+        entry.delete(:debit_amount)
+        entry.delete(:credit_amount)
       end
     end
 

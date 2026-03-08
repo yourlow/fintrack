@@ -33,6 +33,7 @@
     <table class="table table-zebra table-sm w-5/6">
       <thead></thead>
       <tr>
+        <th scope="col">ID</th>
         <th scope="col">Date</th>
         <th scope="col">Raw Description</th>
         <th scope="col">User Description</th>
@@ -43,6 +44,9 @@
     </thead>
     <tbody>
       <% transactions.each do |transaction| %>
+        <td>
+          <%= transaction.id%>
+        </td>
         <td>
           <%= transaction.transaction_date&.strftime("%Y-%m-%d") %>
         </td>

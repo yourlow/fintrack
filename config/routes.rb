@@ -17,6 +17,8 @@ Rails.application.routes.draw do
   resources :accounts
   resources :users
 
+  get "/spa", to: "spa#index"
+
   get "up" => "rails/health#show", as: :rails_health_check
 
   # Defines the root path route ("/")

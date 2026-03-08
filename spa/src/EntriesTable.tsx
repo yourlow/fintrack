@@ -1,9 +1,9 @@
-import type { EntryForm, EntryType } from "./types";
+import type { Account, EntryForm, EntryType } from "./types";
 import { formatCurrency } from "./utils";
 
 type Props = {
   entries: EntryForm[];
-  accounts: string[];
+  accounts: Account[];
   totals: { creditCents: number; debitCents: number };
   onChange: (id: number, field: keyof EntryForm, value: string) => void;
   onRemove: (id: number) => void;
@@ -36,13 +36,13 @@ export function EntriesTable({
               <td>
                 <select
                   className="select select-bordered w-full"
-                  value={entry.account}
-                  onChange={(e) => onChange(entry.id, "account", e.target.value)}
+                  value={entry.accountId}
+                  onChange={(e) => onChange(entry.id, "accountId", e.target.value)}
                 >
                   <option value="">Select</option>
                   {accounts.map((account) => (
-                    <option key={account} value={account}>
-                      {account}
+                    <option key={account.id} value={account.id}>
+                      {account.name}
                     </option>
                   ))}
                 </select>

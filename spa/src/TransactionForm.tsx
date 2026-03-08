@@ -1,8 +1,9 @@
+import type { FormEvent } from "react";
 import { EntriesTable } from "./EntriesTable";
-import type { EntryForm, TransactionFormState } from "./types";
+import type { Account, EntryForm, TransactionFormState } from "./types";
 
 type Props = {
-  accounts: string[];
+  accounts: Account[];
   formState: TransactionFormState;
   entries: EntryForm[];
   totals: { creditCents: number; debitCents: number };
@@ -10,6 +11,8 @@ type Props = {
   onEntryChange: (id: number, field: keyof EntryForm, value: string) => void;
   onAddEntry: () => void;
   onRemoveEntry: (id: number) => void;
+  onSubmit: (e: FormEvent) => void;
+  isSaving?: boolean;
 };
 
 export function TransactionForm({
@@ -21,10 +24,12 @@ export function TransactionForm({
   onEntryChange,
   onAddEntry,
   onRemoveEntry,
+  onSubmit,
+  isSaving,
 }: Props) {
   return (
     <div className="w-full rounded-box bg-base-100 p-6 shadow-sm">
-      <form className="space-y-4">
+      <form className="space-y-4" onSubmit={onSubmit}>
         <div className="flex flex-wrap gap-6">
           <div className="w-full md:w-7/12 space-y-4 min-w-[300px]">
             <div>
@@ -65,7 +70,9 @@ export function TransactionForm({
                 }
               />
             </div>
-            <button className="btn btn-primary">Save transaction</button>
+            <button className="btn btn-primary" type="submit" disabled={isSaving}>
+              {isSaving ? "Saving..." : "Save transaction"}
+            </button>
           </div>
 
           <div className="w-full md:w-5/12 min-w-[280px]">

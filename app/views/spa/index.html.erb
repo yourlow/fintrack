@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="csrf-token" content="<%= form_authenticity_token %>">
 
     <% if Rails.env.development? %>
       <script type="module">
@@ -13,7 +14,7 @@
         window.__vite_plugin_react_preamble_installed__ = true
       </script>
       <script type="module" src="http://127.0.0.1:5173/@vite/client"></script>
-      <script type="module" src="http://127.0.0.1:5173/src/main.jsx"></script>
+      <script type="module" src="http://127.0.0.1:5173/src/main.tsx"></script>
     <% else %>
       <script type="module" src="/spa/assets/index.js"></script>
     <% end %>
